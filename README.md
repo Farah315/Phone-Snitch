@@ -17,6 +17,18 @@ hides Instagram when you're being weak, and still answers your questions when yo
 
 ---
 
+## Demo
+
+<div align="center">
+
+[![Phone Snitch demo](https://img.youtube.com/vi/zHgzJ3yhnMU/hqdefault.jpg)](https://www.youtube.com/shorts/zHgzJ3yhnMU)
+
+**[Watch the demo on YouTube](https://www.youtube.com/shorts/zHgzJ3yhnMU)**
+
+</div>
+
+---
+
 ## Screenshots
 
 | Home | Dashboard | Settings |
@@ -105,7 +117,7 @@ flowchart LR
 ### Project structure
 
 ```
-app/src/main/java/com/farah/smartlauncher/
+app/src/main/java/com/farah/phonesnitch/
 ├── domain/            models, DetoxPolicy, AppRules, use cases, repository interfaces
 │   └── usecase/       BuildHomeSections, ClassifyApps, AskAssistant, BuildDashboardStats, BuildTimeStats
 ├── data/
@@ -147,20 +159,11 @@ app/src/main/java/com/farah/smartlauncher/
 - **The API key ships inside the APK** (via `BuildConfig`). Fine for a learning project. For a real app, put a small backend in front of the model.
 - Daily limits refresh once a minute, so you can overshoot by about a minute.
 
----
-
-## Roadmap
-
-- [ ] Backend proxy so the API key never ships in the app
-- [ ] Accessibility-based blocking
-- [ ] Weekly report written by the AI ("you opened Instagram 140 times. Proud of you?")
-- [ ] Widget for the dashboard
-- [ ] Unit tests for `DetoxPolicy`, `BuildHomeSectionsUseCase` and the usage scanner
 
 ---
 
 <div align="center">
 
-*The snitch is you. The phone is just the witness.* 
+*The snitch is you. The phone is just the witness.*
 
 </div>
