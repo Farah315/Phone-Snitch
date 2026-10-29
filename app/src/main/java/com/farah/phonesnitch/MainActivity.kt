@@ -30,5 +30,4 @@ class MainActivity : ComponentActivity() {
         super.onStart()
         viewModel.refreshApps()
     }
-
 }

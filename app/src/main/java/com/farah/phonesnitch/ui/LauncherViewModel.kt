@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.farah.phonesnitch.AppContainer
+import com.farah.phonesnitch.agent.AgentModel
+import com.farah.phonesnitch.agent.AgentUiState
 import com.farah.phonesnitch.domain.AppRules
 import com.farah.phonesnitch.domain.DetoxPolicy
 import com.farah.phonesnitch.domain.model.AppCategory
@@ -16,6 +18,7 @@ import com.farah.phonesnitch.domain.model.DetoxStage
 import com.farah.phonesnitch.domain.model.HomeSection
 import com.farah.phonesnitch.domain.model.TimeSlot
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +30,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -298,6 +302,44 @@ class LauncherViewModel(private val container: AppContainer) : ViewModel() {
 
     fun clearAssistant() {
         _assistant.value = AssistantState()
+    }
+
+    // ---- Agent (tool calling) ----
+
+    val agentModels: List<AgentModel> = container.agentModels
+
+    private val _agent = MutableStateFlow(AgentUiState(selected = agentModels.first()))
+    val agent: StateFlow<AgentUiState> = _agent.asStateFlow()
+    private var agentJob: Job? = null
+
+    fun selectAgentModel(model: AgentModel) {
+        _agent.update { it.copy(selected = model) }
+    }
+
+    /** Runs the agent for real: the model may open apps and change settings through the tools. */
+    fun runAgent(message: String) {
+        if (message.isBlank() || _agent.value.loading) return
+        val model = _agent.value.selected
+        _agent.update { it.copy(loading = true, result = null, comparison = emptyList()) }
+        agentJob = viewModelScope.launch {
+            val result = container.agent.run(model, message.trim(), dryRun = false)
+            _agent.update { it.copy(loading = false, result = result) }
+        }
+    }
+
+    /** Same message on every model, as a dry run (nothing is opened or changed). */
+    fun compareAgentModels(message: String) {
+        if (message.isBlank() || _agent.value.loading) return
+        _agent.update { it.copy(loading = true, result = null, comparison = emptyList()) }
+        agentJob = viewModelScope.launch {
+            val results = container.agent.compare(agentModels, message.trim())
+            _agent.update { it.copy(loading = false, comparison = results) }
+        }
+    }
+
+    fun clearAgent() {
+        agentJob?.cancel()
+        _agent.update { it.copy(loading = false, result = null, comparison = emptyList()) }
     }
 }
 

@@ -62,7 +62,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun LauncherRoot(viewModel: LauncherViewModel) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val assistant by viewModel.assistant.collectAsStateWithLifecycle()
+    val agent by viewModel.agent.collectAsStateWithLifecycle()
     val classifying by viewModel.classifying.collectAsStateWithLifecycle()
     val stats by viewModel.stats.collectAsStateWithLifecycle()
     var showDashboard by remember { mutableStateOf(false) }
@@ -124,12 +124,15 @@ fun LauncherRoot(viewModel: LauncherViewModel) {
     }
 
     if (showAssistant) {
-        AssistantSheet(
-            state = assistant,
-            onAsk = viewModel::ask,
+        AgentSheet(
+            state = agent,
+            models = viewModel.agentModels,
+            onSelectModel = viewModel::selectAgentModel,
+            onRun = viewModel::runAgent,
+            onCompare = viewModel::compareAgentModels,
             onDismiss = {
                 showAssistant = false
-                viewModel.clearAssistant()
+                viewModel.clearAgent()
             },
         )
     }
