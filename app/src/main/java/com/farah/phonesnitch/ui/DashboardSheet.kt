@@ -164,7 +164,7 @@ private fun AccessBanner(onGrant: () -> Unit) {
             Text(
                 "So the launcher also counts apps you open from notifications or anywhere else, " +
                     "shows time spent per app, and can enforce daily limits. " +
-                    "Android opens a settings page: find Smart Launcher and turn it on.",
+                    "Android opens a settings page: find Phone Snitch and turn it on.",
                 style = MaterialTheme.typography.bodySmall,
             )
             Button(onClick = onGrant) { Text("Open settings") }

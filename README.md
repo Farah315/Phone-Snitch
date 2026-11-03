@@ -21,9 +21,9 @@ hides Instagram when you're being weak, and still answers your questions when yo
 
 <div align="center">
 
-[![Phone Snitch demo](https://img.youtube.com/vi/zHgzJ3yhnMU/hqdefault.jpg)](https://www.youtube.com/shorts/zHgzJ3yhnMU)
+[![Phone Snitch demo](https://img.youtube.com/vi/G2cF_R55IGk/hqdefault.jpg)](https://www.youtube.com/shorts/G2cF_R55IGk)
 
-**[Watch the demo on YouTube](https://www.youtube.com/shorts/zHgzJ3yhnMU)**
+**[Watch the demo on YouTube](https://www.youtube.com/shorts/G2cF_R55IGk)**
 
 </div>
 
