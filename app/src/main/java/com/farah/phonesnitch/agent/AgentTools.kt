@@ -306,8 +306,8 @@ class AgentTools(
             is Resolved.Problem -> return found.outcome
         }
         val value = minutesArg ?: return fail("minutes is missing")
-        if (value < 0) return fail("minutes must be 0 or more")
-        val limit = if (value == 0) null else value.coerceAtMost(MAX_LIMIT_MINUTES)
+if (value < 0 || value > MAX_LIMIT_MINUTES) return fail("minutes must be between 0 and $MAX_LIMIT_MINUTES")
+        val limit = if (value == 0) null else value
 
         if (dryRun) {
             return dryRunOutcome(if (limit == null) "remove the limit of ${app.label}" else "limit ${app.label} to $limit min per day")
