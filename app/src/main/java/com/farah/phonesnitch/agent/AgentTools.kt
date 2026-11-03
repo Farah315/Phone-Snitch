@@ -368,10 +368,10 @@ if (value < 0 || value > MAX_LIMIT_MINUTES) return fail("minutes must be between
         if (q.isEmpty()) return Resolved.Problem(fail("app_name is missing"))
         val apps = repository.loadInstalledApps()
 
-        apps.filter { normalize(it.label) == q || it.packageName.lowercase() == q }
+        apps.filter { normalize(it.label) == q || normalize(it.packageName) == q }
             .singleOrNull()?.let { return Resolved.One(it) }
 
-        val partial = apps.filter { normalize(it.label).contains(q) || it.packageName.lowercase().contains(q) }
+        val partial = apps.filter { normalize(it.label).contains(q) || normalize(it.packageName).contains(q) }
         return when {
             partial.size == 1 -> Resolved.One(partial.first())
             partial.isEmpty() -> Resolved.Problem(fail("No installed app matches '$query'. Try find_apps."))
