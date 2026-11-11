@@ -26,7 +26,7 @@ android {
 
         // The key stays out of source control (local.properties is git-ignored).
         buildConfigField("String", "GEMINI_API_KEY", "\"${localProps.getProperty("GEMINI_API_KEY", "")}\"")
-        buildConfigField("String", "GEMINI_MODEL", "\"${localProps.getProperty("GEMINI_MODEL", "gemini-3.5-flash-lite")}\"")
+        buildConfigField("String", "GEMINI_MODEL", "\"${localProps.getProperty("GEMINI_MODEL", "gemini-2.5-flash")}\"")
     }
 
     buildTypes {

@@ -12,8 +12,6 @@ import com.farah.phonesnitch.domain.repository.UsageStatsRepository
 import com.farah.phonesnitch.domain.usecase.BuildDashboardStatsUseCase
 import com.farah.phonesnitch.domain.usecase.BuildTimeStatsUseCase
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -47,7 +45,6 @@ class AgentTools(
 ) {
     private val dashboardStats = BuildDashboardStatsUseCase()
     private val timeStats = BuildTimeStatsUseCase()
-    private val usageImportMutex = Mutex()
 
     // ---------------------------------------------------------------- declarations (what the model sees)
 
@@ -154,8 +151,8 @@ class AgentTools(
         when (name) {
             "find_apps" -> findApps(args.str("query").orEmpty())
             "open_app" -> openApp(args.str("app_name"), dryRun)
-            "get_usage_stats" -> usageStatsFor(args.str("period") ?: "today")
-            "get_app_usage" -> appUsage(args.str("app_name"))
+            "get_usage_stats" -> usageStatsFor(args.str("period") ?: "today", dryRun)
+            "get_app_usage" -> appUsage(args.str("app_name"), dryRun)
             "set_daily_limit" -> setDailyLimit(args.str("app_name"), args.int("minutes"), dryRun)
             "set_social_detox" -> setDetox(args.bool("enabled"), dryRun)
             "pin_app" -> pinApp(args.str("app_name"), args.bool("pinned"), dryRun)
@@ -229,8 +226,8 @@ class AgentTools(
         )
     }
 
-    private suspend fun usageStatsFor(period: String): ToolOutcome {
-        refreshUsageImports()
+    private suspend fun usageStatsFor(period: String, dryRun: Boolean): ToolOutcome {
+        refreshUsageImports(dryRun)
         val apps = repository.loadInstalledApps()
         val prefs = repository.observePreferences().first()
         val stats = dashboardStats(
@@ -277,12 +274,12 @@ class AgentTools(
         }
     }
 
-    private suspend fun appUsage(appName: String?): ToolOutcome {
+    private suspend fun appUsage(appName: String?, dryRun: Boolean): ToolOutcome {
         val app = when (val found = resolve(appName)) {
             is Resolved.One -> found.app
             is Resolved.Problem -> return found.outcome
         }
-        refreshUsageImports()
+        refreshUsageImports(dryRun)
         val zone = ZoneId.systemDefault()
         val today = LocalDate.now()
         val mine = repository.observeLaunches().first().filter { it.packageName == app.packageName }
@@ -391,9 +388,9 @@ if (value < 0 || value > MAX_LIMIT_MINUTES) return fail("minutes must be between
     private suspend fun classifications(prefs: Map<String, com.farah.phonesnitch.domain.model.AppPreference>) =
         AppRules.applyOverrides(repository.observeClassifications().first(), prefs)
 
-    private suspend fun refreshUsageImports() {
-        if (!usageStats.hasAccess()) return
-        usageImportMutex.withLock { usageStats.importOpens() }
+    private suspend fun refreshUsageImports(dryRun: Boolean) {
+        if (dryRun || !usageStats.hasAccess()) return
+        usageStats.importOpens()
     }
 
     private fun detoxStage(today: LocalDate): DetoxStage =

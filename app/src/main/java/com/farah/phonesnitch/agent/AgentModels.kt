@@ -5,10 +5,10 @@ data class AgentModel(val id: String, val label: String)
 
 object AgentModels {
     private val known = listOf(
-        AgentModel("gemini-3.5-flash-lite", "Gemini 3.5 Flash-Lite"),
-        AgentModel("gemini-3.1-flash-lite", "Gemini 3.1 Flash-Lite"),
-        AgentModel("gemini-3.6-flash", "Gemini 3.6 Flash"),
-        AgentModel("gemini-3.8-flash", "Gemini 3.8 Flash"),
+        AgentModel("gemini-2.5-flash-lite", "Gemini 2.5 Flash-Lite"),
+        AgentModel("gemini-2.5-flash", "Gemini 2.5 Flash"),
+        AgentModel("gemini-2.5-pro", "Gemini 2.5 Pro"),
+        AgentModel("gemini-2.0-flash", "Gemini 2.0 Flash"),
     )
 
     /** The model from local.properties comes first (it is the default), then the other known ones. */
