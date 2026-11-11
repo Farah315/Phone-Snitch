@@ -2,6 +2,10 @@ package com.farah.phonesnitch
 
 import android.content.Context
 import androidx.room.Room
+import com.farah.phonesnitch.agent.AgentModel
+import com.farah.phonesnitch.agent.AgentModels
+import com.farah.phonesnitch.agent.AgentTools
+import com.farah.phonesnitch.agent.GeminiAgentClient
 import com.farah.phonesnitch.data.local.LauncherDatabase
 import com.farah.phonesnitch.data.local.MIGRATION_1_2
 import com.farah.phonesnitch.data.local.MIGRATION_2_3
@@ -71,4 +75,9 @@ class AppContainer(context: Context) {
 
     val usageStats: UsageStatsRepository =
         UsageStatsRepositoryImpl(UsageStatsSource(appContext), repository, settings)
+
+    // ---- Agent: the model decides which of our functions (tools) to call ----
+    val agentModels: List<AgentModel> = AgentModels.options(BuildConfig.GEMINI_MODEL)
+    private val agentTools = AgentTools(repository, settings, usageStats, appLauncher)
+    val agent = GeminiAgentClient(api, BuildConfig.GEMINI_API_KEY, agentTools)
 }

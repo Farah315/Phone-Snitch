@@ -2,6 +2,7 @@ package com.farah.phonesnitch.data.remote
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -14,6 +15,17 @@ interface GeminiApi {
         @Query("key") apiKey: String,
         @Body body: GeminiRequest,
     ): GeminiResponse
+
+    /**
+     * Same endpoint, but with raw JSON in and out. The agent needs this because function calling
+     * sends back extra fields (like thoughtSignature) that must be echoed to the model untouched.
+     */
+    @POST("v1beta/models/{model}:generateContent")
+    suspend fun generateRaw(
+        @Path("model") model: String,
+        @Query("key") apiKey: String,
+        @Body body: JsonObject,
+    ): JsonObject
 }
 
 @Serializable

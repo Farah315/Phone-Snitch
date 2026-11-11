@@ -21,9 +21,9 @@ hides Instagram when you're being weak, and still answers your questions when yo
 
 <div align="center">
 
-[![Phone Snitch demo](https://img.youtube.com/vi/zHgzJ3yhnMU/hqdefault.jpg)](https://www.youtube.com/shorts/zHgzJ3yhnMU)
+[![Phone Snitch demo](https://img.youtube.com/vi/G2cF_R55IGk/hqdefault.jpg)](https://www.youtube.com/shorts/G2cF_R55IGk)
 
-**[Watch the demo on YouTube](https://www.youtube.com/shorts/zHgzJ3yhnMU)**
+**[Watch the demo on YouTube](https://www.youtube.com/shorts/G2cF_R55IGk)**
 
 </div>
 
@@ -141,7 +141,7 @@ app/src/main/java/com/farah/phonesnitch/
 2. Open (or create) `local.properties` in the project root, next to `settings.gradle.kts`, and add a key from [Google AI Studio](https://aistudio.google.com/apikey). The file is git-ignored, so your key stays out of the repo:
    ```properties
    GEMINI_API_KEY=your_key_here
-   GEMINI_MODEL=gemini-3.5-flash-lite
+   GEMINI_MODEL=gemini-2.5-flash
    ```
    If you get **HTTP 404**, the model name is retired or misspelled. Pick a current one from the [model list](https://ai.google.dev/gemini-api/docs/models).
 3. Run on a real phone (Android 8.0+). Press **Home** and choose **Phone Snitch → Always**.

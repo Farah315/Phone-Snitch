@@ -11,6 +11,8 @@ import com.farah.phonesnitch.domain.repository.LauncherRepository
 import com.farah.phonesnitch.domain.repository.SettingsRepository
 import com.farah.phonesnitch.domain.repository.UsageStatsRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.ZoneId
@@ -105,22 +107,25 @@ class UsageStatsRepositoryImpl(
     private val launcherRepository: LauncherRepository,
     private val settings: SettingsRepository,
 ) : UsageStatsRepository {
+    private val importMutex = Mutex()
 
     override fun hasAccess(): Boolean = source.hasAccess()
 
     override suspend fun importOpens(): Int = withContext(Dispatchers.IO) {
-        val now = System.currentTimeMillis()
-        val last = settings.lastUsageImportMillis
-        val firstImport = last <= 0L
-        // Android only keeps a few days of events, 7 is a safe window for the first import.
-        val from = if (firstImport) now - FIRST_IMPORT_DAYS * DAY_MILLIS else last
+        importMutex.withLock {
+            val now = System.currentTimeMillis()
+            val last = settings.lastUsageImportMillis
+            val firstImport = last <= 0L
+            // Android only keeps a few days of events, 7 is a safe window for the first import.
+            val from = if (firstImport) now - FIRST_IMPORT_DAYS * DAY_MILLIS else last
 
-        val installed = launcherRepository.loadInstalledApps().map { it.packageName }.toSet()
-        val opens = source.scan(from, now).opens.filter { it.packageName in installed }
+            val installed = launcherRepository.loadInstalledApps().map { it.packageName }.toSet()
+            val opens = source.scan(from, now).opens.filter { it.packageName in installed }
 
-        launcherRepository.importLaunches(opens, replaceSince = if (firstImport) from else null)
-        settings.lastUsageImportMillis = now
-        opens.size
+            launcherRepository.importLaunches(opens, replaceSince = if (firstImport) from else null)
+            settings.lastUsageImportMillis = now
+            opens.size
+        }
     }
 
     override suspend fun todayForegroundMillis(): Map<String, Long> = withContext(Dispatchers.IO) {
